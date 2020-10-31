@@ -109,7 +109,7 @@
    首先安装nodejs和yarn
    1. git clone https://github.com/XavierXuV5/manga
 2. yarn install
-   3. yarn link  // 删除 yarn unlink
+   3. yarn link
    4. manga -h
    ```
    
