@@ -103,12 +103,16 @@
 
    #### 使用、开发
 
-   如果有同学想自己尝试使用或者开发，可以clone到本地，代码有很多注释，实现逻辑也不难。
+   如果有同学想自己尝试使用或者开发，可以clone到本地，代码有很多注释，实现逻辑也不难。[项目地址](https://github.com/XavierXuV5/manga)，需要注意的是我这里采用了[puppeteer-core](https://www.npmjs.com/package/puppeteer-core)，启动的是本地的Chrome，使用前请检查是否有安装Chrome浏览器。你还可以使用[puppeteer](https://www.npmjs.com/package/puppeteer)，因为它自带Chromium。
 
    ```shell
-   yarn install
+   首先安装nodejs和yarn
+   1. git clone https://github.com/XavierXuV5/manga
+2. yarn install
+   3. yarn link  // 删除 yarn unlink
+   4. manga -h
    ```
-
+   
    
 
 ### 3.谈谈
