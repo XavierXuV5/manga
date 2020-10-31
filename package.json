@@ -1,0 +1,15 @@
+{
+  "name": "puppeteer-manga",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "bin": {
+    "manga": "index.js"
+  },
+  "dependencies": {
+    "commander": "^6.1.0",
+    "epub-gen": "^0.1.0",
+    "inquirer": "^7.3.3",
+    "puppeteer-core": "^5.3.1"
+  }
+}
