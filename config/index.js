@@ -19,9 +19,13 @@ module.exports = {
     // 打开开发者工具, 当此值为true时, headless总为false
     devtools: false,
     // 关闭headless模式, 不会打开浏览器
-    headless: true,
+    headless: false,
     // 启动本地的chrome
     executablePath: getChromePath(),
+    defaultViewport: {
+      width: 1400,
+      height: 1000
+    }
   },
   baseUrl: 'https://www.cocomanhua.com',
   searchUrl: '/search?searchString=${works}',
