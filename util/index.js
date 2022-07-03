@@ -1,4 +1,6 @@
 const fs = require('fs');
+const inquirer = require("inquirer");
+const { urls } = require('../config');
 
 module.exports = {
   /**
@@ -73,5 +75,26 @@ module.exports = {
         resolve();
       })
     })
+  },
+  // 选择平台进行选择
+  selectPla: async () => {
+     let palName = await inquirer.prompt([
+      {
+        type: 'list',
+        message: '请选择其中一个网站',
+        name: 'manga',
+        choices: [
+          '漫画猫',
+          'cocomanga'
+        ],
+        filter: (val) => {
+          return val;
+        }
+      },
+    ])
+    return urls.filter((item) => (item.siteName === palName.manga ))[0];
+  },
+  sleep: (time) => {
+    return new Promise((resolve) => setTimeout(resolve, time));
   }
 }
