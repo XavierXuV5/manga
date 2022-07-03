@@ -8,6 +8,24 @@ const getSection = require('./getManga/getSection');
 const { baseUrl } = require('./config');
 const program = new Command();
 
+// 2022-07-03 新增漫画猫爬取
+/*inquirer.prompt([
+  {
+    type: 'list',
+    message: '请选择其中一个网站',
+    name: 'manga',
+    choices: [
+        '漫画猫',
+        'cocomanga'
+    ],
+    filter: (val) => {
+      return val;
+    }
+  },
+]).then(value => {
+  console.log(`选择的平台是${value.manga}`);
+});*/
+
 program
   .option('-s, --search [漫画名称]', '搜索漫画')
   .option('-d, --download [下载地址]', '下载漫画')
