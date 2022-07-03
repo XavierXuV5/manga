@@ -2,6 +2,8 @@
 
 module.exports = {
     pla2GetSection: async (browser, plaObj, downloadUrl) => {
+        console.log(`地址为：${ plaObj.baseUrl } ${ downloadUrl }`);
+
         const page = await browser.newPage();
         await page.goto(plaObj.baseUrl + downloadUrl);
 

@@ -4,6 +4,8 @@ const { sleep } = require('../../../util')
 
 module.exports = {
     pla1GetSection: async (browser, plaObj, downloadUrl) => {
+        console.log(`地址为：${ downloadUrl }`);
+
         const page = await browser.newPage();
         await page.goto(downloadUrl);
 

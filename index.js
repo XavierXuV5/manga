@@ -2,7 +2,7 @@
 
 const { Command } = require('commander');
 const inquirer = require('inquirer');
-const { getManga, getSingleSection } = require('./getManga');
+const { getManga } = require('./getManga');
 const searchManga = require('./getManga/searchManga');
 const getSection = require('./getManga/getSection');
 const { baseUrl } = require('./config');
@@ -51,9 +51,7 @@ if (program.search) {
         ];
         inquirer.prompt(promptList).then(answers => {
           let targetObj = mangaList.filter((item) => item.sectionName === answers.manga);
-          console.log(`开始爬取《${ targetObj[0].sectionName }》|| 地址为：${ plaObj.baseUrl } ${ targetObj[0].url }`);
           // 爬取漫画
-          // getManga(targetObj[0].url);
           getSection(targetObj[0].url, plaObj).then((res) => {
             console.log(`一共有${res.length}个章节`);
             res.unshift({
@@ -73,13 +71,8 @@ if (program.search) {
               },
             ];
             inquirer.prompt(promptList).then(answers => {
-              let sectionObj = res.filter((item, index) => `${index} - ${ item.sectionName}` === answers.manga);
-              if (sectionObj[0].sectionName === '**全部下载**') {
-                getManga(targetObj[0].url);
-              } else {
-                // 单一下载章节
-                getSingleSection(sectionObj[0].sectionName, sectionObj[0].url, targetObj[0].url.replace(baseUrl, ''));
-              }
+              let sectionObj = res.filter((item, index) => `${index} - ${ item.sectionName}` === answers.manga)
+              getManga(targetObj[0].url, plaObj, sectionObj[0]);
             })
           })
         });
