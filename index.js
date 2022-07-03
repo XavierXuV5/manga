@@ -6,8 +6,9 @@ const { getManga, getSingleSection } = require('./getManga');
 const searchManga = require('./getManga/searchManga');
 const getSection = require('./getManga/getSection');
 const { baseUrl } = require('./config');
-const program = new Command();
 const { selectPla } = require('./util');
+const program = new Command();
+
 
 
 
@@ -50,10 +51,10 @@ if (program.search) {
         ];
         inquirer.prompt(promptList).then(answers => {
           let targetObj = mangaList.filter((item) => item.sectionName === answers.manga);
-          console.log(`开始爬取《${targetObj[0].sectionName}》|| 地址为：${baseUrl}${targetObj[0].url}`);
+          console.log(`开始爬取《${ targetObj[0].sectionName }》|| 地址为：${ plaObj.baseUrl } ${ targetObj[0].url }`);
           // 爬取漫画
           // getManga(targetObj[0].url);
-          getSection(baseUrl + targetObj[0].url).then((res) => {
+          getSection(targetObj[0].url, plaObj).then((res) => {
             console.log(`一共有${res.length}个章节`);
             res.unshift({
               url: targetObj[0].url,
