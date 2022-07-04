@@ -1,6 +1,15 @@
 // 漫画猫 获取章节
-const _ = require('lodash');
 const { sleep } = require('../../../util')
+
+const concatArr = (arr) => {
+    const newArr = [];
+    arr.map(items => {
+        items.map(item => {
+            newArr.push(item);
+        })
+    })
+    return newArr
+}
 
 module.exports = {
     pla1GetSection: async (browser, plaObj, downloadUrl) => {
@@ -27,6 +36,6 @@ module.exports = {
 
         await browser.close();
 
-        return _.union(as[0])
+        return concatArr(as)
     }
 }

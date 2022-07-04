@@ -72,7 +72,7 @@ if (program.search) {
             ];
             inquirer.prompt(promptList).then(answers => {
               let sectionObj = res.filter((item, index) => `${index} - ${ item.sectionName}` === answers.manga)
-              getManga(targetObj[0].url, plaObj, sectionObj[0], targetObj);
+              getManga(targetObj[0].url, plaObj, sectionObj[0], targetObj, res);
             })
           })
         });
