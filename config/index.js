@@ -33,6 +33,7 @@ module.exports = {
       siteName: '漫画猫',
       baseUrl: 'https://www.maofly.com',
       searchUrl: '/search.html?q=${works}',
+      downloadUrl: 'https://mao.mhtupian.com/uploads/',
     },
     {
       palNum: 2,

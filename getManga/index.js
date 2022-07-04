@@ -10,13 +10,14 @@ const { pla2GetManGa, getSingleSection} = require('./getManga/pla2');
  * @param workUrl 作品URL
  * @param plaObj
  * @param sectionObj
+ * @param targetObj
  * @returns {Promise<void>}
  */
-const getManga = async (workUrl, plaObj, sectionObj) => {
+const getManga = async (workUrl, plaObj, sectionObj, targetObj) => {
   // 区分漫画平台爬取
   if (plaObj.palNum === 1) {
     // 漫画猫
-    await pla1GetManGa(workUrl);
+    await pla1GetManGa(workUrl, plaObj, sectionObj, targetObj);
 
   } else if (plaObj.palNum === 2) {
     // cocomanga

@@ -25,6 +25,8 @@ module.exports = {
             })
         });
 
+        await browser.close();
+
         return _.union(as[0])
     }
 }
