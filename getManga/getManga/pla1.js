@@ -8,19 +8,31 @@ const { createDir, moveFile, createFile, sleep } = require("../../util");
 const openNewPage = async (browser,  mangaName, sectionName, mangaUrl) => {
     const page = await browser.newPage();
     // 监听浏览器response event
-    await page.on('response', (response) => {
-        const name  = response.url().substring(response.url().lastIndexOf('.') - 3);
-        response.buffer().then(async buffer => {
-            await createFile(`${name}`, buffer);
-            await moveFile(`${name}`, `manga/${mangaName}/${sectionName}/${ name }`);
-        })
+    await page.on('response',async (response) => {
+        if (response.ok()) {
+            if (response.url().indexOf('img') !== -1) {
+                const name  = response.url().substring(response.url().lastIndexOf('.') - 3);
+                await response.buffer().then(async buffer => {
+                    await createFile(`${name}`, buffer);
+                    await moveFile(`${name}`, `manga/${mangaName}/${sectionName}/${ name }`);
+                })
+            }
+            // 关闭窗口
+            await page.close();
+        } else {
+            console.log('出现异常情况...');
+            console.log(response.url());
+            fs.appendFileSync('errLog.txt', `出现异常的URL: ${response.url()}\n`,);
+            // await openNewPage(browser,  mangaName, sectionName, mangaUrl);
+        }
     })
     await page.goto(mangaUrl);
-    // 关闭窗口
-    await page.close();
 }
 
-const getSingeContent = async (workUrl, plaObj, sectionObj, targetObj, page) => {
+const getSingeContent = async (workUrl, plaObj, sectionObj, targetObj) => {
+    const browser = await (puppeteer.launch(config));
+    const page = await browser.newPage();
+
     await page.goto(sectionObj.url);
     // 注入代码
     await page.addScriptTag({
@@ -38,14 +50,22 @@ const getSingeContent = async (workUrl, plaObj, sectionObj, targetObj, page) => 
     if (!await fs.existsSync('manga')) {
         await createDir('manga');
     }
-    // 创建漫画名称的文件夹
-    await createDir(mangaName);
-    // 移动文件夹
-    await moveFile(mangaName, `manga/${mangaName}`);
-    // 创建单话文件夹
-    await createDir(sectionObj.sectionName);
-    // 移动文件夹
-    await moveFile(sectionObj.sectionName, `manga/${mangaName}/${sectionObj.sectionName}`)
+    // 判断是否爬取相同的漫画
+    if (fs.existsSync(`manga/${mangaName}`)) {
+        // 创建单话文件夹
+        await createDir(sectionObj.sectionName);
+        // 移动文件夹
+        await moveFile(sectionObj.sectionName, `manga/${mangaName}/${sectionObj.sectionName}`)
+    } else {
+        // 创建漫画名称的文件夹
+        await createDir(mangaName);
+        // 移动文件夹
+        await moveFile(mangaName, `manga/${mangaName}`);
+        // 创建单话文件夹
+        await createDir(sectionObj.sectionName);
+        // 移动文件夹
+        await moveFile(sectionObj.sectionName, `manga/${mangaName}/${sectionObj.sectionName}`)
+    }
     // 循环打开页面获取内容
     for (let i = 0; i < mangaContent.length; i += 1) {
         await openNewPage(
@@ -54,11 +74,11 @@ const getSingeContent = async (workUrl, plaObj, sectionObj, targetObj, page) => 
             sectionObj.sectionName,
             `${plaObj.downloadUrl}${mangaContent[i]}`
         );
-        await sleep(1500);
+        await sleep(8000);
     }
     // 结束
     await browser.close();
-    console.log('爬取完毕');
+    console.log(`${sectionObj.sectionName}--->爬取完毕`);
 }
 
 module.exports = {
@@ -72,18 +92,16 @@ module.exports = {
      * @returns {Promise<void>}
      */
     pla1GetManGa: async (workUrl, plaObj, sectionObj, targetObj, res) => {
-        const browser = await (puppeteer.launch(config));
-        const page = await browser.newPage();
-
         // 判断是否全部下载
         if (sectionObj.sectionName === '**全部下载**') {
 
             for (let i = 1; i < res.length; i += 1) {
-                console.log(res[i]);
+                // console.log(res[i]);
+                await getSingeContent(workUrl, plaObj, res[i], targetObj);
             }
 
         } else {
-            await getSingeContent(workUrl, plaObj, sectionObj, targetObj, page);
+            await getSingeContent(workUrl, plaObj, sectionObj, targetObj);
         }
     }
 }
