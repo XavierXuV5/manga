@@ -6,35 +6,64 @@ const { createDir, moveFile, createFile, sleep } = require("../../util");
 
 
 const openNewPage = async (browser,  mangaName, sectionName, mangaUrl) => {
+    let time = null;
     const page = await browser.newPage();
-    // 监听浏览器response event
-    await page.on('response',async (response) => {
-        if (response.ok()) {
-            if (response.url().indexOf('img') !== -1) {
-                const name  = response.url().substring(response.url().lastIndexOf('.') - 3);
-                await response.buffer().then(async buffer => {
-                    await createFile(`${name}`, buffer);
-                    await moveFile(`${name}`, `manga/${mangaName}/${sectionName}/${ name }`);
-                })
+
+    // 监听request事件，筛选一开始加载的图片
+    await page.on('requestfinished', async (request) => {
+        if (request.url().indexOf('img') !== -1) {
+            const name  = request.url().substring(request.url().lastIndexOf('.') - 3);
+            // 判断是否有重复复的请求被监听到
+            if (!fs.existsSync(`test/${ name }`)) {
+                await createFile(`${name}`, await request.response().buffer());
+                await moveFile(`${name}`, `manga/${mangaName}/${sectionName}/${ name }`);
             }
-            // 关闭窗口
-            await page.close();
-        } else {
-            console.log('出现异常情况...');
-            console.log(response.url());
-            fs.appendFileSync('errLog.txt', `出现异常的URL: ${response.url()}\n`,);
-            // await openNewPage(browser,  mangaName, sectionName, mangaUrl);
         }
     })
+
+    // 监听弹窗事件
+    await page.on('dialog', async dialog => {
+        clearInterval(time);
+        await dialog.dismiss();
+        console.log(`${sectionName}---->爬取完毕`);
+        await page.close()
+    });
+
     await page.goto(mangaUrl);
+    await page.content();
+
+    time = setInterval(async () => {
+        await page.click('#all > .next');
+    }, 3000)
+
+    /*
+      // 监听浏览器response event
+      await page.on('response',async (response) => {
+          if (response.ok()) {
+              if (response.url().indexOf('img') !== -1) {
+                  const name  = response.url().substring(response.url().lastIndexOf('.') - 3);
+                  await response.buffer().then(async buffer => {
+                      await createFile(`${name}`, buffer);
+                      await moveFile(`${name}`, `manga/${mangaName}/${sectionName}/${ name }`);
+                  })
+              }
+              // 关闭窗口
+              await page.close();
+          } else {
+              console.log('出现异常情况...');
+              console.log(response.url());
+              fs.appendFileSync('errLog.txt', `出现异常的URL: ${response.url()}\n`,);
+              // await openNewPage(browser,  mangaName, sectionName, mangaUrl);
+          }
+      })*/
 }
 
 const getSingeContent = async (workUrl, plaObj, sectionObj, targetObj) => {
     const browser = await (puppeteer.launch(config));
-    const page = await browser.newPage();
+    // const page = await browser.newPage();
 
-    await page.goto(sectionObj.url);
-    // 注入代码
+    // await page.goto(sectionObj.url);
+    /*// 注入代码
     await page.addScriptTag({
         content: `
                 let mangaDataArr = img_data_arr;
@@ -43,7 +72,7 @@ const getSingeContent = async (workUrl, plaObj, sectionObj, targetObj) => {
     // 获取里面的页数内容
     const mangaContent = await page.$$eval('div', divs => {
         return mangaDataArr;
-    })
+    })*/
     // 漫画名称
     const mangaName = targetObj[0].sectionName
     // 创建存放漫画的文件夹
@@ -66,7 +95,13 @@ const getSingeContent = async (workUrl, plaObj, sectionObj, targetObj) => {
         // 移动文件夹
         await moveFile(sectionObj.sectionName, `manga/${mangaName}/${sectionObj.sectionName}`)
     }
-    // 循环打开页面获取内容
+    await openNewPage(
+        browser,
+        mangaName,
+        sectionObj.sectionName,
+        `${sectionObj.url}`
+    );
+   /* // 循环打开页面获取内容
     for (let i = 0; i < mangaContent.length; i += 1) {
         await openNewPage(
             browser,
@@ -75,10 +110,10 @@ const getSingeContent = async (workUrl, plaObj, sectionObj, targetObj) => {
             `${plaObj.downloadUrl}${mangaContent[i]}`
         );
         await sleep(8000);
-    }
+    }*/
     // 结束
-    await browser.close();
-    console.log(`${sectionObj.sectionName}--->爬取完毕`);
+    // await browser.close();
+    // console.log(`${sectionObj.sectionName}--->爬取完毕`);
 }
 
 module.exports = {
