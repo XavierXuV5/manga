@@ -45,12 +45,12 @@ const start = async (url) => {
 
 
 const sortFilePath = async () => {
-    const files = fs.readdirSync('test');
+    const files = fs.readdirSync('manga/白兔玩偶/单行本----第10卷');
 // console.log(files);
     const newFilesPath = [];
 
     files.map( filePath => {
-        fs.stat(`test/${filePath}`, (err, stats) => {
+        fs.stat(`manga/白兔玩偶/单行本----第10卷/${filePath}`, (err, stats) => {
             if (err) throw err;
             let cTime = dayjs(stats.ctime).format('YYYY-MM-DD HH:mm:ss:SSS');
             newFilesPath.push({
@@ -63,6 +63,11 @@ const sortFilePath = async () => {
     return newFilesPath;
 }
 
+const pad = (s) => {
+    while (s.length < 3)
+        s = '0' + s;
+    return s;
+}
 
 
 sortFilePath().then( async (res) => {
@@ -70,12 +75,12 @@ sortFilePath().then( async (res) => {
     const newSortFile = res.sort((a, b) => {
         return new Date(a.cTime) > new Date(b.cTime) ? 1 : -1
     })
-    // await createDir('test/01');
+    await createDir('test/10');
     for (let i = 0; i < newSortFile.length; i++) {
-        let len = newSortFile.length;
         let fileExtension = newSortFile[i].filePath.substring(newSortFile[i].filePath.lastIndexOf('.') + 1);
-        console.log(fileExtension);
-        // await fsEX.copy(`test/${newSortFile[i].filePath}`, `test/01/${i}.${fileExtension}`)
+        // console.log(`${pad((i + 1).toString())}.${fileExtension}`);
+        // console.log(newSortFile[i].filePath)
+        await fsEX.copy(`manga/白兔玩偶/单行本----第10卷/${newSortFile[i].filePath}`, `test/10/${pad((i + 1).toString())}.${fileExtension}`)
     }
     // console.log(newSortFile);
 })
